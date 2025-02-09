@@ -1,0 +1,19 @@
+{
+  "bind_addr": "0.0.0.0:8080",
+  "collectors_base_path": "/etc/bloodhound/collectors",
+  "default_admin": {
+    "password": "vyb8ry0W1HUkonotJsWg1C4s1kUoCe1o",
+    "principal_name": "admin"
+  },
+  "default_password": "vyb8ry0W1HUkonotJsWg1C4s1kUoCe1o",
+  "log_level": "INFO",
+  "log_path": "bloodhound.log",
+  "metrics_port": ":2112",
+  "root_url": "http://127.0.0.1:8080",
+  "tls": {
+    "cert_file": "",
+    "key_file": ""
+  },
+  "version": 1,
+  "work_dir": "/opt/bloodhound/work"
+}
