@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=BloodHound
+Comment=
+Exec=sudo ./bloodhound-cli containers start
+Icon=bloodhound
+Path=/home/kali/CPTS/Active-Directory/BloodHound
+Terminal=true
+StartupNotify=false
