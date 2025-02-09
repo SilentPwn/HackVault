@@ -2,7 +2,8 @@ ZSH_THEME="robbyrussell"
 DISABLE_AUTO_TITLE="true"
 plugins=(git eza zsh-autosuggestions grc sudo colorize zsh-syntax-highlighting tmux)
 ZSH_COLORIZE_STYLE="colorful"
-ZSH_TMUX_AUTOSTART=false
+#set next setting to false for root
+ZSH_TMUX_AUTOSTART=true
 export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
 alias nmap="grc nmap"
