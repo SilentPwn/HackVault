@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ // IIS Shortname Scanner
+  ~ // Released as open source by Soroush Dalili (@irsdl)
+  ~ // Researched & developed by Soroush Dalili (@irsdl)
+  ~ // Project link: https://github.com/irsdl/IIS-ShortName-Scanner
+  ~ // Released under AGPL see LICENSE for more information
+  -->
+
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>IIS Short File/Folder Name (8.3) Scanner - Configuration File</comment>
+	
+	<!-- To enabled maximum verbose messages -->
+	<entry key="debug">false</entry>
+	
+	<!-- To save all outputs in a file -->
+	<entry key="saveOutput">false</entry>
+	<entry key="outputFile">iis_shortname_scanner_logfile.txt</entry>
+	
+	<!-- It will not ask any questions even when proxy / time delay are not configured - it will ignore them. It is useful for automation -->
+	<entry key="hassleFree">false</entry>
+	
+	<!-- You can change the user-agent if it is needed -->
+	<entry key="userAgent"><![CDATA[Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0]]></entry>
+	
+	<!-- Your cookie information. Can be a hidden value that will pass your WAF. -->
+	<entry key="cookies"></entry>
+	<!-- example:
+	<entry key="cookies">IIS_Tilde_Scanner=1;sessionid=123</entry>
+	-->
+	
+	<!-- Additional headers such as Authorization header can be defined here -->
+	<entry key="headersDelimiter">@@</entry>
+	<entry key="headers"></entry>
+	<!-- example:
+	<entry key="headers">X-Forwarded-For: 127.0.0.1@@X-Originating-IP: 127.0.0.1@@X-Cluster-Client-Ip: 127.0.0.1</entry>
+	-->
+	
+	<!-- In order to see the errors better than a normal request you can use ?&aspxerrorpath=/ -->
+	<entry key="URLSuffix"><![CDATA[]]></entry>
+	
+	<!-- discard any of these to have more speed! -->
+	<!-- default is based on letter frequencies http://en.wikipedia.org/wiki/Letter_frequency -->
+	<entry key="inScopeCharacters"><![CDATA[ETAONRISHDLFCMUGYPWBVKJXQZ0123456789_-$~()&!#%'@^`{}]]></entry>
+		
+	<!-- in Milliseconds -->
+	<entry key="maxConnectionTimeOut">60000</entry>
+	
+	<!-- in Milliseconds -->
+	<entry key="maxRetryTimes">10</entry>
+	
+	<!-- Proxy will be ignored if this is empty -->
+	<entry key="proxyServerName"></entry>
+	<entry key="proxyServerPort"></entry>
+	
+	<!-- Delay after each request in milliseconds - 0 may cause false positive results -->
+	<entry key="maxDelayAfterEachRequest">1</entry>
+	
+	<entry key="magicFinalPartDelimiter">,</entry>
+	<entry key="magicFinalPartList"><![CDATA[/~1/.rem,/~1/,\a.aspx,\a.asp,/a.aspx,/a.asp,/a.shtml,/a.asmx,/a.ashx,/a.config,/a.php,/a.jpg,/webresource.axd,/a.xxx]]></entry>
+	
+	<!-- in Windows we can sometimes use > instead of ? -->
+	<entry key="questionMarkSymbol"><![CDATA[?]]></entry>
+	
+	<!-- in Windows we can sometimes use < instead of * - only change this if you need to (it misses items) -->
+	<entry key="asteriskSymbol"><![CDATA[*]]></entry>
+	
+	<!-- "*" will be replaced with asteriskSymbol variable later -->
+	<entry key="magicFileName"><![CDATA[*~1*]]></entry>
+	
+	<!-- "*" will be replaced with asteriskSymbol variable later -->
+	<entry key="magicFileExtension"><![CDATA[*]]></entry>
+
+	<entry key="requestMethodDelimiter">,</entry>
+	<entry key="requestMethod"><![CDATA[OPTIONS,POST,DEBUG,TRACE,GET,HEAD]]></entry>
+	
+	<!-- This will be used to find file or directory names that start with this string - should be less than 6 characters  -->
+	<entry key="nameStartsWith"><![CDATA[]]></entry>
+	
+	<!-- This will be used to find file or directory extensions that start with this string - should be less than 4 characters  -->
+	<!-- This may not be reliable when the extension discovery is not reliable on a target -->
+	<entry key="extStartsWith"><![CDATA[]]></entry>
+	
+	<!-- This will be used to set a maximum value on the "NUMBER_HERE" parameter in FILENAME~NUMBER_HERE (example: DEFAUL~2.ASP) -->
+	<!-- The minimum value for this parameter is 1 -->
+	<entry key="maxNumericalPart">4</entry>
+	
+	<!-- This will be used to set a maximum value on the "NUMBER_HERE" parameter in FILENAME~NUMBER_HERE even when the previous number is not available -->
+	<!-- For instance, if it is set to 3, when we have DEFAUL~1.ASP & we do not have DEFAULT~2.ASP, it still checks DEFAUL~3.asp -->
+	<!-- This parameter automatically override the "maxNumericalPart" parameter when "forceNumericalPart > maxNumericalPart" -->
+	<!-- The minimum value for this parameter is 1 -->
+	<!-- Anything greater than 1 may lead to false positive results -->
+	<entry key="forceNumericalPart">1</entry>
+	
+	<!-- This will be used to show the potential/actual names in final results if possible -->
+	<entry key="showActualNames">true</entry>
+	
+	<entry key="useProvidedUrlWithoutChange">false</entry>
+	
+	<entry key="performUrlEncoding">false</entry>
+	
+	<!-- This is to increase the false positive rate. If it is set to 1 or 2, it may show more false positives. -->
+	<entry key="minVulnerableCheckRepeat">3</entry>
+
+	<!-- How to use headers when comparing responses:
+		0=removes them completely and uses status code
+		1=removes them completely but keeps the first status line
+		2=removes simple ones, cleans the rest
+		3=cleans them but doesn't remove them completely
+	-->
+	<entry key="ignoreHeaderLevel">2</entry>
+
+	<!-- How to use body when comparing responses:
+		0=removes it completely
+		1=cleans it but doesn't remove it completely
+	-->
+	<entry key="ignoreBodyLevel">1</entry>
+
+	<!-- This will be used to compare the different responses (header/body) and accept them as equal if their length difference is equal or less than this
+			-1 can be used to ignore this rule completely
+			This may make the scan result unreliable especially with ignoreHeaderLevel<= 1 and/or ignoreBodyLevel=0
+			it is recommended to set it to a very small value such as 5 or -1
+	-->
+	<entry key="acceptableDifferenceLengthBetweenResponses">5</entry>
+</properties>
