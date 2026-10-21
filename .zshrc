@@ -78,6 +78,7 @@ plugins=(git eza zsh-autosuggestions grc sudo colorize zsh-syntax-highlighting t
 ZSH_COLORIZE_STYLE="colorful"
 ZSH_TMUX_AUTOSTART=true
 
+DISABLE_MAGIC_FUNCTIONS=true
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -113,3 +114,56 @@ alias fzf="fzf --walker-root=/ --preview='batcat --color=always {}'"
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+# --- tmux-wide export/unset via session env (no send-keys) -----------
+autoload -Uz add-zsh-hook
+
+disable -r export 2>/dev/null
+disable -r unset  2>/dev/null
+
+_tex_mark() {                       # remember a managed name in the session
+  local managed n found=0
+  managed="$(tmux show-environment _TEX_MANAGED 2>/dev/null)"; managed="${managed#*=}"
+  for n in ${(s: :)managed}; do [[ "$n" == "$1" ]] && found=1; done
+  (( found )) || tmux set-environment _TEX_MANAGED "${managed:+$managed }$1"
+}
+
+_tex_sync() {                       # pull managed vars from session env
+  [[ -n "$TMUX" ]] || return
+  local managed n line
+  managed="$(tmux show-environment _TEX_MANAGED 2>/dev/null)"; managed="${managed#*=}"
+  [[ -z "$managed" ]] && return
+  for n in ${(s: :)managed}; do
+    line="$(tmux show-environment "$n" 2>/dev/null)"
+    if [[ -z "$line" || "$line" == -* ]]; then
+      builtin unset "$n" 2>/dev/null
+    else
+      builtin export "$n=${line#*=}"
+    fi
+  done
+}
+add-zsh-hook precmd _tex_sync
+
+export() {
+  builtin export "$@"; local ret=$?
+  [[ -n "$TMUX" && "$ZSH_EVAL_CONTEXT" == toplevel:shfunc ]] || return $ret
+  local arg
+  for arg in "$@"; do
+    [[ "$arg" == *=* ]] || continue
+    tmux set-environment "${arg%%=*}" "${arg#*=}"
+    _tex_mark "${arg%%=*}"
+  done
+  return $ret
+}
+
+unset() {
+  builtin unset "$@"; local ret=$?
+  [[ -n "$TMUX" && "$ZSH_EVAL_CONTEXT" == toplevel:shfunc ]] || return $ret
+  [[ "$1" == -* ]] && return $ret
+  local arg
+  for arg in "$@"; do
+    tmux set-environment -u "$arg"
+    _tex_mark "$arg"
+  done
+  return $ret
+}
