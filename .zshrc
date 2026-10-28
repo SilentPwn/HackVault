@@ -86,7 +86,6 @@ source $ZSH/oh-my-zsh.sh
 alias nmap="grc nmap"
 alias ls='eza --long --icons --group-directories-first'
 alias la='eza --long --all --icons --group-directories-first'
-alias fzf="fzf --walker-root=/ --preview='batcat --color=always {}'"
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -120,6 +119,17 @@ autoload -Uz add-zsh-hook
 
 disable -r export 2>/dev/null
 disable -r unset  2>/dev/null
+
+fzf() {
+  if [ -t 0 ]; then
+    # no pipe: use the walker from the given root (default current dir)
+    command fzf --walker=file,dir,follow,hidden --walker-root="${1:-.}" \
+      --preview='batcat --color=always {}'
+  else
+    # piped input: read stdin, keep the preview
+    command fzf --preview='batcat --color=always {}'
+  fi
+}
 
 _tex_mark() {                       # remember a managed name in the session
   local managed n found=0
