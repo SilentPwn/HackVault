@@ -20,7 +20,7 @@
 mkdir -p ~/logs/tmux
 ```
 
-Indicated by a red "[REC]" sign (bottom right)
+Indicated by a red "[LOG]" sign (bottom right)
 
 - start_logging [SUBDIR]: starts tmux logging, directory argument optional
 - stop_logging: stops tmux logging
