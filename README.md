@@ -10,6 +10,10 @@
 
 ## Tmux Logging
 
+```
+mkdir -p ~/logs/tmux
+```
+
 Indicated by a red "[REC]" sign (bottom right)
 
 - start_logging [SUBDIR]: starts tmux logging, directory argument optional
