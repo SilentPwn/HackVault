@@ -1,79 +1,57 @@
-# tmux pane logging
-# Source this in ~/.zshrc:
-#   source ~/.config/zsh/tmux-logging.zsh
-# The [REC] indicator lives in the tmux status bar (status-right in ~/.tmux.conf).
+# tmux logging: start_logging [dir] / stop_logging
+# Logs every pane in the current session, including new panes and windows.
+#   start_logging            -> ~/logs/tmux/
+#   start_logging htb-box    -> ~/logs/tmux/htb-box/
+#   start_logging /some/path -> /some/path/
 
 TMUX_LOG_DIR="${TMUX_LOG_DIR:-$HOME/logs/tmux}"
 
-# start_logging [name]
-# Logs everything in the current tmux pane to a file.
 start_logging() {
-  if [[ -z "$TMUX" ]]; then
-    echo "[-] Not inside tmux"
+  [[ -z "$TMUX" ]] && { echo "[-] Not inside tmux"; return 1; }
+
+  local s=$(tmux display -p '#S') p n=0
+  if [[ "$(tmux show -v -t "$s" @logging 2>/dev/null)" == "1" ]]; then
+    echo "[!] Already logging session '$s'"
     return 1
   fi
 
-  if [[ "$(tmux display -p -t "$TMUX_PANE" '#{pane_pipe}')" == "1" ]]; then
-    echo "[!] Already logging to: $(tmux show -pv -t "$TMUX_PANE" @log_file 2>/dev/null)"
-    return 1
+  # optional argument: folder name (inside $TMUX_LOG_DIR) or an absolute path
+  local dir="$TMUX_LOG_DIR"
+  if [[ -n "$1" ]]; then
+    [[ "$1" == /* ]] && dir="$1" || dir="$TMUX_LOG_DIR/$1"
   fi
 
-  mkdir -p "$TMUX_LOG_DIR"
+  mkdir -p "$dir" || return 1
+  local cmd="cat >> ${(q)dir}/window_#{window_index}-pane_#{pane_index}_\$(date +%Y%m%d-%H:%M:%S).log"
 
-  local session window pane ts name file
-  session=$(tmux display -p -t "$TMUX_PANE" '#S')
-  window=$(tmux display -p -t "$TMUX_PANE" '#I')
-  pane=$(tmux display -p -t "$TMUX_PANE" '#P')
-  ts=$(date +%Y%m%d-%H%M%S)
-  name="${1:+${1}_}"
-  file="$TMUX_LOG_DIR/${name}${session}-w${window}-p${pane}_${ts}.log"
+  for p in $(tmux list-panes -s -t "$s" -F '#{pane_id}'); do
+    tmux pipe-pane -t "$p" -o "$cmd" && (( n++ ))
+  done
+  tmux set-hook -t "$s" after-split-window "pipe-pane -o \"$cmd\""
+  tmux set-hook -t "$s" after-new-window   "pipe-pane -o \"$cmd\""
+  tmux set -t "$s" @logging 1
 
-  {
-    echo "===== Logging started: $(date '+%Y-%m-%d %H:%M:%S %Z') ====="
-    echo "===== Host: $(hostname)  User: $USER  Pane: ${session}:${window}.${pane} ====="
-  } >> "$file"
-
-  tmux pipe-pane -t "$TMUX_PANE" -o "cat >> ${(q)file}"
-  tmux set -p -t "$TMUX_PANE" @log_file "$file"
   tmux refresh-client -S
-
-  echo "[+] Logging to: $file"
+  echo "[+] Logging $n pane(s) in session '$s' to $dir"
 }
 
-# stop_logging
 stop_logging() {
-  if [[ -z "$TMUX" ]]; then
-    echo "[-] Not inside tmux"
+  [[ -z "$TMUX" ]] && { echo "[-] Not inside tmux"; return 1; }
+
+  local s=$(tmux display -p '#S') p n=0
+  if [[ "$(tmux show -v -t "$s" @logging 2>/dev/null)" != "1" ]]; then
+    echo "[!] Not logging session '$s'"
     return 1
   fi
 
-  if [[ "$(tmux display -p -t "$TMUX_PANE" '#{pane_pipe}')" != "1" ]]; then
-    echo "[!] Not logging in this pane"
-    return 1
-  fi
+  tmux set-hook -u -t "$s" after-split-window
+  tmux set-hook -u -t "$s" after-new-window
+  tmux set -u -t "$s" @logging
 
-  local file
-  file=$(tmux show -pv -t "$TMUX_PANE" @log_file 2>/dev/null)
+  for p in $(tmux list-panes -s -t "$s" -F '#{pane_id} #{pane_pipe}' | awk '$2==1{print $1}'); do
+    tmux pipe-pane -t "$p" && (( n++ ))
+  done
 
-  tmux pipe-pane -t "$TMUX_PANE"   # no command = close the pipe
-  tmux set -pu -t "$TMUX_PANE" @log_file
   tmux refresh-client -S
-
-  [[ -n "$file" ]] && echo "===== Logging stopped: $(date '+%Y-%m-%d %H:%M:%S %Z') =====" >> "$file"
-  echo "[+] Logging stopped${file:+: $file}"
-}
-
-# logging_status
-logging_status() {
-  if [[ -n "$TMUX" && "$(tmux display -p -t "$TMUX_PANE" '#{pane_pipe}')" == "1" ]]; then
-    echo "[+] Logging ON: $(tmux show -pv -t "$TMUX_PANE" @log_file 2>/dev/null)"
-  else
-    echo "[-] Logging OFF"
-  fi
-}
-
-# Strip ANSI color codes from a log for clean reports
-# usage: clean_log file.log > file.clean.log
-clean_log() {
-  sed -r 's/\x1B\[[0-9;?]*[a-zA-Z]//g; s/\x1B\][^\x07]*\x07//g; s/\r//g' "$1"
+  echo "[+] Stopped logging $n pane(s) in session '$s'"
 }
