@@ -177,3 +177,5 @@ unset() {
   done
   return $ret
 }
+
+source ~/.config/zsh/tmux-logging.zsh
