@@ -1,12 +1,18 @@
-# .zshrc
+# Configuration
+
+## .zshrc
 
 - set for root's `.zshrc` file the option `ZSH_TMUX_AUTOSTART` to false 
 
-# .config/zsh/tmux-logging.zsh
+## .config/zsh/tmux-logging.zsh
 
 - only for non-root user
 
-# Tmux Features
+## .tmux.conf
+
+- only for non-root user
+
+# Features
 
 ## Tmux Logging
 
