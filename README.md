@@ -24,3 +24,11 @@ Indicated by a red "[LOG]" sign (bottom right)
 
 - start_logging [SUBDIR]: starts tmux logging, directory argument optional
 - stop_logging: stops tmux logging
+
+## TCP Panel Listener
+
+```
+cat /etc/sudoers.d/genmon-ports
+
+kali ALL=(root) NOPASSWD: /usr/bin/ss -H -tlnp
+```
