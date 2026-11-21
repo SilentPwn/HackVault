@@ -19,6 +19,9 @@ mv kskew.sh .tmux.conf .zshrc ~/
 mkdir ~/Scripts
 rmdir ~/Music ~/Projects ~/Public ~/Templates ~/Videos
 mv panel-tcp-listeners.sh ~/Scripts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/Hack.zip
+sudo unzip Hack.zip -d /usr/share/fonts/Hack
+rm Hack.zip
 export PATH=$PATH:/home/kali/go/bin
 #------ BloodHound
 wget https://github.com/SpecterOps/bloodhound-cli/releases/download/v0.2.1/bloodhound-cli-linux-amd64.tar.gz
