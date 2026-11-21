@@ -15,6 +15,8 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 #------ Home
 chmod +x kskew.sh panel-tcp-listeners.sh
+sudo timedatectl set-ntp on
+sudo echo "kali ALL=(root) NOPASSWD: /usr/bin/ss, /usr/bin/docker" > /etc/sudoers.d/genmon-ports
 mv kskew.sh .tmux.conf .zshrc ~/
 mkdir ~/Scripts
 rmdir ~/Music ~/Projects ~/Public ~/Templates ~/Videos
