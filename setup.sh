@@ -23,7 +23,7 @@ cd
 wget https://github.com/SpecterOps/bloodhound-cli/releases/download/v0.2.1/bloodhound-cli-linux-amd64.tar.gz
 tar xfvz bloodhound-cli-linux-amd64.tar.gz
 rm bloodhound-cli-linux-amd64.tar.gz
-mkdir -p ~/.config/bloodhound
-echo 'BLOODHOUND_PORT=8888' >  ~/.config/bloodhound/.env
+sudo mkdir -p ~/.config/bloodhound
+sudo echo 'BLOODHOUND_PORT=8888' >  ~/.config/bloodhound/.env
 sudo mv bloodhound-cli /usr/bin
 sudo bloodhound-cli install
