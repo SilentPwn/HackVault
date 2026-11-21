@@ -4,13 +4,12 @@ wget -qO - https://download.sublimetext.com/sublimehq-pub.gpg | sudo tee /etc/ap
 echo -e 'Types: deb\nURIs: https://download.sublimetext.com/\nSuites: apt/stable/\nSigned-By: /etc/apt/keyrings/sublimehq-pub.asc' | sudo tee /etc/apt/sources.list.d/sublime-text.sources
 #------ APT
 sudo apt update
-sudo apt install -y golang docker-compose docker.io xsel sublime-text bloodhound-ce-python seclists fzf peass bat bloodyad enum4linux-ng evil-winrm-py penelope eza zsh-autosuggestions grc sudo colorize zsh-syntax-highlighting
+sudo apt install -y golang docker-compose ntpsec-ntpdate docker.io xsel sublime-text bloodhound-ce-python seclists fzf peass bat bloodyad enum4linux-ng evil-winrm-py penelope eza zsh-autosuggestions grc sudo colorize zsh-syntax-highlighting
 #------ GO
 go install github.com/ropnop/kerbrute
 git clone https://github.com/Macmod/godap
-cd godap
-go install .
-cd
+cd godap && go install .
+cd && rm -rf godap
 #------ OhMyZSH
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
